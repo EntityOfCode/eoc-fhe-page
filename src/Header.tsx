@@ -34,7 +34,11 @@ const Header: React.FC<HeaderProps> = ({}) => {
             <div className={styles.logoContainer}>
                 <img src={logo} alt="Logo" className={styles.logo} />
             </div>
-            <p className={isDarkMode ? styles.taglineDark : styles.taglineLight}>
+            <p
+                className={
+                    isDarkMode ? styles.taglineDark : styles.taglineLight
+                }
+            >
                 where [c] stands for more than just crypto
             </p>
         </div>
