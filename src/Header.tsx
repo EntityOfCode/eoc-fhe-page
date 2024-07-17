@@ -1,12 +1,10 @@
-
-import logo from './assets/logo.svg'
+import logo from './assets/census black s.svg'
 
 interface HeaderProps {
     title?: string
 }
 
 const Header: React.FC<HeaderProps> = ({ title }) => {
-
     return (
         <div className="flex justify-between items-center p-4">
             <div className="flex items-center">

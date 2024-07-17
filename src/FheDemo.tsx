@@ -1,181 +1,180 @@
-import React, { useEffect, useState } from 'react'
-//@ts-ignore
-import createModule from './eoc-tfhelib'
+import React, { useEffect, useState } from 'react';
+import createModule from './eoc-tfhelib';
 
 const FheDemo: React.FC = () => {
+  const [Module, setModule] = useState<any>(null);
+  const [secretKey, setSecretKey] = useState<string | null>(null);
+  const [publicKey, setPublicKey] = useState<string | null>(null);
+  const [valueToEncrypt1, setValueToEncrypt1] = useState<number>(0);
+  const [valueToEncrypt2, setValueToEncrypt2] = useState<number>(0);
+  const [encryptedValue1, setEncryptedValue1] = useState<string | null>(null);
+  const [encryptedValue2, setEncryptedValue2] = useState<string | null>(null);
+  const [encryptedSum, setEncryptedSum] = useState<string | null>(null);
+  const [encryptedDiff, setEncryptedDiff] = useState<string | null>(null);
+  const [decryptedSum, setDecryptedSum] = useState<number | null>(null);
+  const [decryptedDiff, setDecryptedDiff] = useState<number | null>(null);
+  const [stringToEncrypt, setStringToEncrypt] = useState<string>('');
+  const [encryptedString, setEncryptedString] = useState<string | null>(null);
+  const [decryptedString, setDecryptedString] = useState<string | null>(null);
 
-    const [fheModule, setFheModule] = useState();
-    const [base64SecretKey, setBase64SecretKey] = useState('');
+  useEffect(() => {
+    (async () => {
+      try {
+        console.log("Starting module initialization...");
+        const module = await createModule();
+        module.onRuntimeInitialized = () => {
+          console.log("Module initialized successfully.");
+          setModule(module);
+        };
 
-    const [base64PublicKey, setBase64PublicKey] = useState('');
+        if (module.calledRun) {
+          module.onRuntimeInitialized();
+        } else {
+          console.log("Waiting for runtime initialization...");
+        }
+      } catch (error) {
+        console.error("Error initializing the module:", error);
+      }
+    })();
+  }, []);
 
-    useEffect(() => {
-        ;(async () => {
-            try {
-                console.log('Starting module initialization...')
-                const Module = await createModule({
-                    wasmBinaryFile: './eoc-tfhelib.wasm',
-                })
-                setFheModule(Module);
-
-                Module.onRuntimeInitialized = () => {
-                    console.log('Module initialized successfully.')
-
-                    // // Generate a secret key
-                    // const base64SecretKey = Module.generateSecretKey()
-                    // console.log('Generated Secret Key: OK')
-
-                    // // Generate a public key from the secret key
-                    // const base64PublicKey =
-                    //     Module.generatePublicKey(base64SecretKey)
-                    // console.log('Generated Public Key: OK')
-
-                    // // Encrypt integers using the secret key
-                    // const valueToEncrypt1 = 7
-                    // const valueToEncrypt2 = 5
-                    // const encryptedValue1 = Module.encryptInteger(
-                    //     valueToEncrypt1,
-                    //     base64SecretKey
-                    // )
-                    // const encryptedValue2 = Module.encryptInteger(
-                    //     valueToEncrypt2,
-                    //     base64SecretKey
-                    // )
-                    // console.log('Encrypted Value 1: OK')
-                    // console.log('Encrypted Value 2: OK')
-
-                    // // Encrypt a string using the secret key
-                    // const stringToEncrypt = 'Hello, World!'
-                    // const encryptedString = Module.encryptString(
-                    //     stringToEncrypt,
-                    //     base64SecretKey
-                    // )
-                    // console.log('Encrypted String: OK')
-
-                    // // Perform addition on encrypted values
-                    // const encryptedSum = Module.addCiphertexts(
-                    //     encryptedValue1,
-                    //     encryptedValue2,
-                    //     base64PublicKey
-                    // )
-                    // console.log('Encrypted Sum: OK')
-
-                    // // Perform subtraction on encrypted values
-                    // const encryptedDiff = Module.subtractCiphertexts(
-                    //     encryptedValue1,
-                    //     encryptedValue2,
-                    //     base64PublicKey
-                    // )
-                    // console.log('Encrypted Difference: OK')
-
-                    // // Decrypt the results using the secret key
-                    // const decryptedSum = Module.decryptInteger(
-                    //     encryptedSum,
-                    //     base64SecretKey
-                    // )
-                    // const decryptedDiff = Module.decryptInteger(
-                    //     encryptedDiff,
-                    //     base64SecretKey
-                    // )
-                    // console.log('Decrypted Sum:', decryptedSum)
-                    // console.log('Decrypted Difference:', decryptedDiff)
-
-                    // // Decrypt the encrypted string using the secret key
-                    // const decryptedString = Module.decryptString(
-                    //     encryptedString,
-                    //     base64SecretKey,
-                    //     stringToEncrypt.length
-                    // )
-                    // console.log('Decrypted String:', decryptedString)
-
-                    // // Verify the decrypted string matches the original
-                    // if (decryptedString === stringToEncrypt) {
-                    //     console.log(
-                    //         'String encryption and decryption successful.'
-                    //     )
-                    // } else {
-                    //     console.log(
-                    //         'Mismatch in string encryption and decryption.'
-                    //     )
-                    // }
-
-                    // // Verify the decrypted values match the expected results
-                    // if (decryptedSum === valueToEncrypt1 + valueToEncrypt2) {
-                    //     console.log('Addition successful.')
-                    // } else {
-                    //     console.log('Mismatch in addition.')
-                    // }
-
-                    // if (decryptedDiff === valueToEncrypt1 - valueToEncrypt2) {
-                    //     console.log('Subtraction successful.')
-                    // } else {
-                    //     console.log('Mismatch in subtraction.')
-                    // }
-                }
-
-                if (Module.calledRun) {
-                    Module.onRuntimeInitialized()
-                } else {
-                    console.log('Waiting for runtime initialization...')
-                }
-            } catch (error) {
-                console.error('Error initializing the module:', error)
-            }
-        })()
-    }, [])
-
-    const generateSecretKey = async () => {
-        console.time('Generated Secret Key: OK');
-        const _base64SecretKey = fheModule.generateSecretKey()
-        console.timeLog('Generated Secret Key: OK')
-        setBase64SecretKey(_base64SecretKey)
+  const generateSecretKey = () => {
+    if (Module) {
+      const key = Module.generateSecretKey();
+      setSecretKey(key);
+      console.log("Generated Secret Key: OK", key);
     }
+  };
 
-    const generatePublicKey = async () => {
-        console.time('Generated Public Key: OK');
-        const _base64PublicKey = fheModule.generatePublicKey(base64SecretKey)
-        console.timeLog('Generated Public Key: OK')
-        setBase64PublicKey(_base64PublicKey)
+  const generatePublicKey = () => {
+    if (Module && secretKey) {
+      const key = Module.generatePublicKey(secretKey);
+      setPublicKey(key);
+      console.log("Generated Public Key: OK", key);
     }
+  };
 
-    const encryptInteger = async () => {
-                    // // Encrypt integers using the secret key
-                    console.time('Encrypted Value 1: OK');
-                    const valueToEncrypt1 = 7
-                    const valueToEncrypt2 = 5
-                    const encryptedValue1 = fheModule.encryptInteger(
-                        valueToEncrypt1,
-                        base64SecretKey
-                    )
-                    console.timeLog('Encrypted Value 1: OK')
-                    console.time('Encrypted Value 2: OK');
-                    const encryptedValue2 = fheModule.encryptInteger(
-                        valueToEncrypt2,
-                        base64SecretKey
-                    )
-                    console.timeLog('Encrypted Value 2: OK')
-
+  const encryptInteger1 = () => {
+    if (Module && secretKey) {
+      const encrypted = Module.encryptInteger(valueToEncrypt1, secretKey);
+      setEncryptedValue1(encrypted);
+      console.log("Encrypted Value 1: OK", encrypted);
     }
+  };
 
-    return (<>
-    <h1>FHE Demo</h1>
-            <div className="card">
-                <button onClick={() => generateSecretKey()}>
-                    Generate Secret Key 
-                </button>
-            </div>
-            <div className="card">
-                <button onClick={() => generatePublicKey()}>
-                    Generate Public Key 
-                </button>
-            </div>
-            <div className="card">
-                <button onClick={() => encryptInteger()}>
-                    Encrypt Integer
-                </button>
-            </div>
+  const encryptInteger2 = () => {
+    if (Module && secretKey) {
+      const encrypted = Module.encryptInteger(valueToEncrypt2, secretKey);
+      setEncryptedValue2(encrypted);
+      console.log("Encrypted Value 2: OK", encrypted);
+    }
+  };
 
-    </>)
-}
+  const encryptStringValue = () => {
+    if (Module && secretKey) {
+      const encrypted = Module.encryptString(stringToEncrypt, secretKey);
+      setEncryptedString(encrypted);
+      console.log("Encrypted String: OK", encrypted);
+    }
+  };
 
-export default FheDemo
+  const addEncryptedValues = () => {
+    if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
+      const sum = Module.addCiphertexts(encryptedValue1, encryptedValue2, publicKey);
+      setEncryptedSum(sum);
+      console.log("Encrypted Sum: OK", sum);
+    }
+  };
+
+  const subtractEncryptedValues = () => {
+    if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
+      const diff = Module.subtractCiphertexts(encryptedValue1, encryptedValue2, publicKey);
+      setEncryptedDiff(diff);
+      console.log("Encrypted Difference: OK", diff);
+    }
+  };
+
+  const decryptSum = () => {
+    if (Module && encryptedSum && secretKey) {
+      const sum = Module.decryptInteger(encryptedSum, secretKey);
+      setDecryptedSum(sum);
+      console.log("Decrypted Sum: OK", sum);
+    }
+  };
+
+  const decryptDiff = () => {
+    if (Module && encryptedDiff && secretKey) {
+      const diff = Module.decryptInteger(encryptedDiff, secretKey);
+      setDecryptedDiff(diff);
+      console.log("Decrypted Difference: OK", diff);
+    }
+  };
+
+  const decryptStringValue = () => {
+    if (Module && encryptedString && secretKey) {
+      const decrypted = Module.decryptString(encryptedString, secretKey, stringToEncrypt.length);
+      setDecryptedString(decrypted);
+      console.log("Decrypted String: OK", decrypted);
+    }
+  };
+
+  return (
+    <div>
+      <h1>FHE Demo</h1>
+      <button onClick={generateSecretKey}>Generate Secret Key</button>
+      {secretKey && <p>Secret Key: {secretKey}</p>}
+      <button onClick={generatePublicKey} disabled={!secretKey}>Generate Public Key</button>
+      {publicKey && <p>Public Key: {publicKey}</p>}
+      
+      <div>
+        <h2>Encrypt Integers</h2>
+        <input
+          type="number"
+          value={valueToEncrypt1}
+          onChange={(e) => setValueToEncrypt1(parseInt(e.target.value))}
+        />
+        <button onClick={encryptInteger1} disabled={!secretKey}>Encrypt Value 1</button>
+        {encryptedValue1 && <p>Encrypted Value 1: {encryptedValue1}</p>}
+        
+        <input
+          type="number"
+          value={valueToEncrypt2}
+          onChange={(e) => setValueToEncrypt2(parseInt(e.target.value))}
+        />
+        <button onClick={encryptInteger2} disabled={!secretKey}>Encrypt Value 2</button>
+        {encryptedValue2 && <p>Encrypted Value 2: {encryptedValue2}</p>}
+      </div>
+      
+      <div>
+        <h2>Encrypt String</h2>
+        <input
+          type="text"
+          value={stringToEncrypt}
+          onChange={(e) => setStringToEncrypt(e.target.value)}
+        />
+        <button onClick={encryptStringValue} disabled={!secretKey}>Encrypt String</button>
+        {encryptedString && <p>Encrypted String: {encryptedString}</p>}
+      </div>
+      
+      <div>
+        <h2>Operations on Encrypted Values</h2>
+        <button onClick={addEncryptedValues} disabled={!encryptedValue1 || !encryptedValue2 || !publicKey}>Add Encrypted Values</button>
+        {encryptedSum && <p>Encrypted Sum: {encryptedSum}</p>}
+        <button onClick={subtractEncryptedValues} disabled={!encryptedValue1 || !encryptedValue2 || !publicKey}>Subtract Encrypted Values</button>
+        {encryptedDiff && <p>Encrypted Difference: {encryptedDiff}</p>}
+      </div>
+      
+      <div>
+        <h2>Decrypt Results</h2>
+        <button onClick={decryptSum} disabled={!encryptedSum || !secretKey}>Decrypt Sum</button>
+        {decryptedSum !== null && <p>Decrypted Sum: {decryptedSum}</p>}
+        <button onClick={decryptDiff} disabled={!encryptedDiff || !secretKey}>Decrypt Difference</button>
+        {decryptedDiff !== null && <p>Decrypted Difference: {decryptedDiff}</p>}
+        <button onClick={decryptStringValue} disabled={!encryptedString || !secretKey}>Decrypt String</button>
+        {decryptedString && <p>Decrypted String: {decryptedString}</p>}
+      </div>
+    </div>
+  );
+};
+
+export default FheDemo;
