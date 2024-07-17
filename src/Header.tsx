@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import logoDark from './assets/code Black s.svg'
 import logoLight from './assets/code white S.svg'
 import styles from './Header.module.css'
