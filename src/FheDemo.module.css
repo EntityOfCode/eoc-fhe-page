@@ -5,30 +5,29 @@
     background-color: #f9f9f9;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .button {
+}
+
+.button {
     background-color: #3b82f6;
     color: white;
     padding: 8px 16px;
     margin: 8px;
     border-radius: 4px;
-  }
-  
-  .button:disabled {
+}
+
+.button:disabled {
     background-color: #a5b4fc;
-  }
-  
-  .input {
+}
+
+.input {
     padding: 8px;
     margin: 8px 0;
     border: 1px solid #e5e7eb;
     border-radius: 4px;
-  }
-  
-  .heading {
+}
+
+.heading {
     font-size: 1.25rem;
     font-weight: 600;
     margin-top: 16px;
-  }
-  
+}

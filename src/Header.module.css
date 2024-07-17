@@ -3,15 +3,14 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-  }
-  
-  .logo {
+}
+
+.logo {
     height: 32px;
     width: auto;
-  }
-  
-  .tagline {
+}
+
+.tagline {
     font-size: 0.875rem;
     color: white;
-  }
-  
+}
