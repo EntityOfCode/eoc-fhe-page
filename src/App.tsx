@@ -5,7 +5,7 @@ import './App.css'
 function App() {
     return (
         <>
-            <Header title="Entity Of Code - AO - FHE How it works demo" />
+            <Header />
             <FheDemo />
 
             <p className="read-the-docs">

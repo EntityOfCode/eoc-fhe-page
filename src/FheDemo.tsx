@@ -96,7 +96,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const generatePublicKey = async () => {
@@ -116,7 +116,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const encryptInteger1 = async () => {
@@ -136,7 +136,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const encryptInteger2 = async () => {
@@ -156,7 +156,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const encryptStringValue = async () => {
@@ -176,7 +176,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const addEncryptedValues = async () => {
@@ -196,7 +196,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const subtractEncryptedValues = async () => {
@@ -216,7 +216,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const decryptSum = async () => {
@@ -236,7 +236,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const decryptDiff = async () => {
@@ -256,7 +256,7 @@ const FheDemo: React.FC = () => {
             setLoading(false)
             console.timeEnd(tag)
         }
-    }, 10)
+    }, 300)
 }
 
     const decryptStringValue = async () => {
@@ -276,7 +276,7 @@ const FheDemo: React.FC = () => {
                 setLoading(false)
                 console.timeEnd(tag)
             }
-        }, 10)
+        }, 300)
     }
 
     return (
