@@ -16,10 +16,11 @@ const FheDemo: React.FC = () => {
     const [encryptedDiff, setEncryptedDiff] = useState<string | null>(null)
     const [decryptedSum, setDecryptedSum] = useState<number | null>(null)
     const [decryptedDiff, setDecryptedDiff] = useState<number | null>(null)
-    const [stringToEncrypt, setStringToEncrypt] = useState<string>('')
+    const [stringToEncrypt, setStringToEncrypt] = useState<string>('Hello World')
     const [encryptedString, setEncryptedString] = useState<string | null>(null)
     const [decryptedString, setDecryptedString] = useState<string | null>(null)
     const [loading, setLoading] = useState<boolean>(false)
+    const [executionTimes, setExecutionTimes] = useState<{ [key: string]: string }>({});
 
     const logWithTimestamp = (tag: string, message: string) => {
         const timestamp = new Date().toISOString()
@@ -60,205 +61,222 @@ const FheDemo: React.FC = () => {
         })()
     }, [])
 
+    const formatTime = (milliseconds: number) => {
+        const hours = Math.floor(milliseconds / 3600000);
+        const minutes = Math.floor((milliseconds % 3600000) / 60000);
+        const seconds = Math.floor((milliseconds % 60000) / 1000);
+        const ms = milliseconds % 1000;
+    
+        return `${hours}h ${minutes}m ${seconds}s ${ms}ms`;
+      };
+
+    const timeExecution = async (method: () => Promise<void>, label: string) => {
+        console.time(label);
+        const start = performance.now();
+        await method();
+        const end = performance.now();
+        console.timeEnd(label);
+        setExecutionTimes((prev) => ({ ...prev, [label]: formatTime(Math.round(end - start)) }));
+      };
+
     const generateSecretKey = async () => {
         const tag = 'Generate Secret Key'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module) {
-                    const key = Module.generateSecretKey()
-                    setSecretKey(key)
-                    logWithTimestamp(tag, 'Generated Secret Key: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module) {
+                await timeExecution(async () => {
+                    const key = Module.generateSecretKey();
+                    setSecretKey(key);
+                  }, 'generateSecretKey');                    
+                logWithTimestamp(tag, 'Generated Secret Key: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const generatePublicKey = async () => {
         const tag = 'Generate Public Key'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && secretKey) {
-                    const key = Module.generatePublicKey(secretKey)
-                    setPublicKey(key)
-                    logWithTimestamp(tag, 'Generated Public Key: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && secretKey) {
+                await timeExecution(async () => {
+                    const key = Module.generatePublicKey(secretKey);
+                    setPublicKey(key);
+                  }, 'generatePublicKey');
+                logWithTimestamp(tag, 'Generated Public Key: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const encryptInteger1 = async () => {
         const tag = 'Encrypt Value 1'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && secretKey) {
-                    const encrypted = Module.encryptInteger(
-                        valueToEncrypt1,
-                        secretKey
-                    )
-                    setEncryptedValue1(encrypted)
-                    logWithTimestamp(tag, 'Encrypted Value 1: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && secretKey) {
+                await timeExecution(async () => {
+                    const encrypted = Module.encryptInteger(valueToEncrypt1);
+                    setEncryptedValue1(encrypted);
+                  }, 'encryptInteger1');
+                logWithTimestamp(tag, 'Encrypted Value 1: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const encryptInteger2 = async () => {
         const tag = 'Encrypt Value 2'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && secretKey) {
-                    const encrypted = Module.encryptInteger(
-                        valueToEncrypt2,
-                        secretKey
-                    )
-                    setEncryptedValue2(encrypted)
-                    logWithTimestamp(tag, 'Encrypted Value 2: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && secretKey) {
+                await timeExecution(async () => {
+                const encrypted = Module.encryptInteger(valueToEncrypt2)
+                setEncryptedValue2(encrypted)
+            }, 'encryptInteger2');
+            logWithTimestamp(tag, 'Encrypted Value 2: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const encryptStringValue = async () => {
         const tag = 'Encrypt String'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && secretKey) {
-                    const encrypted = Module.encryptString(
-                        stringToEncrypt,
-                        secretKey
-                    )
-                    setEncryptedString(encrypted)
-                    logWithTimestamp(tag, 'Encrypted String: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && secretKey) {
+                await timeExecution(async () => {
+                    const encrypted = Module.encryptString(stringToEncrypt, secretKey)
+                setEncryptedString(encrypted)
+            }, 'encryptString');
+            logWithTimestamp(tag, 'Encrypted String: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const addEncryptedValues = async () => {
         const tag = 'Add Encrypted Values'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
-                    const sum = Module.addCiphertexts(
-                        encryptedValue1,
-                        encryptedValue2,
-                        publicKey
-                    )
-                    setEncryptedSum(sum)
-                    logWithTimestamp(tag, 'Encrypted Sum: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
+                await timeExecution(async () => {
+                    const sum = Module.addCiphertexts(encryptedValue1, encryptedValue2)
+                setEncryptedSum(sum)
+            }, 'addEncryptedValues');
+            logWithTimestamp(tag, 'Encrypted Sum: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const subtractEncryptedValues = async () => {
         const tag = 'Subtract Encrypted Values'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
-                    const diff = Module.subtractCiphertexts(
-                        encryptedValue1,
-                        encryptedValue2,
-                        publicKey
-                    )
-                    setEncryptedDiff(diff)
-                    logWithTimestamp(tag, 'Encrypted Difference: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
+                await timeExecution(async () => {
+                    const diff = Module.subtractCiphertexts(encryptedValue1, encryptedValue2)
+                setEncryptedDiff(diff)
+            }, 'subtractEncryptedValues');
+            logWithTimestamp(tag, 'Encrypted Difference: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const decryptSum = async () => {
         const tag = 'Decrypt Sum'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && encryptedSum && secretKey) {
-                    const sum = Module.decryptInteger(encryptedSum, secretKey)
-                    setDecryptedSum(sum)
-                    logWithTimestamp(tag, 'Decrypted Sum: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && encryptedSum && secretKey) {
+                await timeExecution(async () => {
+                    const sum = Module.decryptInteger(encryptedSum)
+                setDecryptedSum(sum)
+            }, 'decryptSum');
+            logWithTimestamp(tag, 'Decrypted Sum: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const decryptDiff = async () => {
         const tag = 'Decrypt Difference'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
-                if (Module && encryptedDiff && secretKey) {
-                    const diff = Module.decryptInteger(encryptedDiff, secretKey)
-                    setDecryptedDiff(diff)
-                    logWithTimestamp(tag, 'Decrypted Difference: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
+            if (Module && encryptedDiff && secretKey) {
+                await timeExecution(async () => {
+                    const diff = Module.decryptInteger(encryptedDiff)
+                setDecryptedDiff(diff)
+            }, 'decryptDiff');
+            logWithTimestamp(tag, 'Decrypted Difference: OK')
             }
-        }, 0)
-    }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 10)
+}
 
     const decryptStringValue = async () => {
         const tag = 'Decrypt String'
         console.time(tag)
         setLoading(true)
-        setTimeout(function () {
+        setTimeout(async function  () {
             try {
                 if (Module && encryptedString && secretKey) {
-                    const decrypted = Module.decryptString(
-                        encryptedString,
-                        secretKey,
-                        stringToEncrypt.length
-                    )
+                    await timeExecution(async () => {
+                        const decrypted = Module.decryptString(encryptedString, secretKey, stringToEncrypt.length)
                     setDecryptedString(decrypted)
-                    logWithTimestamp(tag, 'Decrypted String: OK')
+                }, 'decryptString');
+                logWithTimestamp(tag, 'Decrypted String: OK')
                 }
             } finally {
                 setLoading(false)
                 console.timeEnd(tag)
             }
-        }, 0)
+        }, 10)
     }
 
     return (
@@ -277,6 +295,7 @@ const FheDemo: React.FC = () => {
                         Generate Secret Key
                     </button>
                     {secretKey && <p>Secret Key: Generated</p>}
+                    {executionTimes['generateSecretKey'] && <p>Time: {executionTimes['generateSecretKey']}</p>}
                     <button
                         onClick={generatePublicKey}
                         disabled={loading || !secretKey}
@@ -285,6 +304,7 @@ const FheDemo: React.FC = () => {
                         Generate Public Key
                     </button>
                     {publicKey && <p>Public Key: Generated</p>}
+                    {executionTimes['generatePublicKey'] && <p>Time: {executionTimes['generatePublicKey']}</p>}
 
                     <div>
                         <h2 className={styles.heading}>Encrypt Integers</h2>
@@ -304,6 +324,7 @@ const FheDemo: React.FC = () => {
                             Encrypt Value 1
                         </button>
                         {encryptedValue1 && <p>Encrypted Value 1: Generated</p>}
+                        {executionTimes['encryptInteger1'] && <p>Time: {executionTimes['encryptInteger1']}</p>}
 
                         <input
                             type="number"
@@ -321,7 +342,8 @@ const FheDemo: React.FC = () => {
                             Encrypt Value 2
                         </button>
                         {encryptedValue2 && <p>Encrypted Value 2: Generated</p>}
-                    </div>
+                        {executionTimes['encryptInteger2'] && <p>Time: {executionTimes['encryptInteger2']}</p>}
+                        </div>
 
                     <div>
                         <h2 className={styles.heading}>Encrypt String</h2>
@@ -339,7 +361,8 @@ const FheDemo: React.FC = () => {
                             Encrypt String
                         </button>
                         {encryptedString && <p>Encrypted String: Generated</p>}
-                    </div>
+                        {executionTimes['encryptString'] && <p>Time: {executionTimes['encryptString']}</p>}
+                        </div>
 
                     <div>
                         <h2 className={styles.heading}>
@@ -357,6 +380,7 @@ const FheDemo: React.FC = () => {
                             Add Encrypted Values
                         </button>
                         {encryptedSum && <p>Encrypted Sum: Generated</p>}
+                        {executionTimes['addEncryptedValues'] && <p>Time: {executionTimes['addEncryptedValues']}</p>}
                         <button
                             onClick={subtractEncryptedValues}
                             disabled={
@@ -371,6 +395,7 @@ const FheDemo: React.FC = () => {
                         {encryptedDiff && (
                             <p>Encrypted Difference: Generated</p>
                         )}
+                        {executionTimes['subtractEncryptedValues'] && <p>Time: {executionTimes['subtractEncryptedValues']}</p>}
                     </div>
 
                     <div>
@@ -385,6 +410,7 @@ const FheDemo: React.FC = () => {
                         {decryptedSum !== null && (
                             <p>Decrypted Sum: {decryptedSum}</p>
                         )}
+                        {executionTimes['decryptSum'] && <p>Time: {executionTimes['decryptSum']}</p>}
                         <button
                             onClick={decryptDiff}
                             disabled={loading || !encryptedDiff || !secretKey}
@@ -405,6 +431,7 @@ const FheDemo: React.FC = () => {
                         {decryptedString && (
                             <p>Decrypted String: {decryptedString}</p>
                         )}
+                        {executionTimes['decryptString'] && <p>Time: {executionTimes['decryptString']}</p>}
                     </div>
                 </>
             )}

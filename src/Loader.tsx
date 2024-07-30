@@ -4,16 +4,16 @@ import logoDark from './assets/code Black s.svg'
 import logoLight from './assets/code white S.svg'
 
 const Loader: React.FC = () => {
-    const [isDarkMode, setIsDarkMode] = useState(false)
+    const [logo, setLogo] = useState(logoLight)
 
     useEffect(() => {
         const prefersDarkScheme = window.matchMedia(
             '(prefers-color-scheme: dark)'
         )
-        setIsDarkMode(prefersDarkScheme.matches)
+        setLogo(prefersDarkScheme.matches ? logoLight : logoDark)
 
         const handleChange = (event: MediaQueryListEvent) => {
-            setIsDarkMode(event.matches)
+            setLogo(event.matches ? logoLight : logoDark)
         }
 
         prefersDarkScheme.addEventListener('change', handleChange)
@@ -23,7 +23,7 @@ const Loader: React.FC = () => {
         }
     }, [])
 
-    const logo = isDarkMode ? logoLight : logoDark
+    // const logo = isDarkMode ? logoLight : logoDark
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen">

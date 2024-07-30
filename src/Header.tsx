@@ -3,11 +3,7 @@ import logoDark from './assets/code Black s.svg'
 import logoLight from './assets/code white S.svg'
 import styles from './Header.module.css'
 
-interface HeaderProps {
-    title?: string
-}
-
-const Header: React.FC<HeaderProps> = ({}) => {
+const Header: React.FC = () => {
     const [isDarkMode, setIsDarkMode] = useState(false)
 
     useEffect(() => {
@@ -15,7 +11,6 @@ const Header: React.FC<HeaderProps> = ({}) => {
             '(prefers-color-scheme: dark)'
         )
         setIsDarkMode(prefersDarkScheme.matches)
-
         const handleChange = (event: MediaQueryListEvent) => {
             setIsDarkMode(event.matches)
         }
