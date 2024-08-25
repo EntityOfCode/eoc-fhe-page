@@ -184,7 +184,6 @@ const FheDemo: React.FC = () => {
         setLoading(true)
         setTimeout(async function  () {
             try {
-            if (isConnected) {
                 await timeExecution(async () => {
                     try {
                         const data = await getEncryptedData(encryptIntegerValueBlockId);
@@ -204,7 +203,6 @@ const FheDemo: React.FC = () => {
                       }
                                       }, 'decryptIntegerValue');
                 logWithTimestamp(tag, 'Decrypt Integer Value: OK')
-            }
         } finally {
             setLoading(false)
             console.timeEnd(tag)
@@ -219,7 +217,6 @@ const FheDemo: React.FC = () => {
         setLoading(true)
         setTimeout(async function  () {
             try {
-            if (isConnected) {
                 await timeExecution(async () => {
                     try {
                         const txAddOperation = await dryrun({
@@ -247,7 +244,6 @@ const FheDemo: React.FC = () => {
                       }
                                       }, 'computeOperationOnEncryptedData');
                 logWithTimestamp(tag, 'Run sum on integer blocks: OK')
-            }
         } finally {
             setLoading(false)
             console.timeEnd(tag)
@@ -301,7 +297,7 @@ const FheDemo: React.FC = () => {
                         />
                         <button
                             onClick={decryptIntegerValue}
-                            disabled={loading || !isConnected || !encryptIntegerValueBlockId}
+                            disabled={loading || !encryptIntegerValueBlockId}
                             className={styles.button}
                         >
                             Decrypt Integer Value
@@ -327,7 +323,7 @@ const FheDemo: React.FC = () => {
                         />
                         <button
                             onClick={computeAddOperationOnEncryptedData}
-                            disabled={loading || !isConnected || !encryptIntegerParam1 || !encryptIntegerParam2}
+                            disabled={loading || !encryptIntegerParam1 || !encryptIntegerParam2}
                             className={styles.button}
                         >
                             Decrypt Sum Block Integer Value
