@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --port 3000",
         "build": "tsc -b && vite build",
         "lint": "eslint .",
         "preview": "vite preview",
@@ -13,6 +13,8 @@
     },
     "dependencies": {
         "@heroicons/react": "^2.1.5",
+        "@othent/kms": "^1.0.12",
+        "@permaweb/aoconnect": "^0.0.59",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "typewriter-effect": "^2.21.0"

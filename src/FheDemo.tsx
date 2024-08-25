@@ -1,65 +1,34 @@
-import React, { useEffect, useState } from 'react'
-//@ts-ignore
-import createModule from './eoc-tfhelib'
+
+import React, { useState } from 'react'
 import styles from './FheDemo.module.css'
 import Loader from './Loader'
+import * as othentSinger from '@othent/kms'
+import {
+    connect,
+    disconnect,
+  } from "@othent/kms";
+  import {
+    dryrun,
+    message,
+    createDataItemSigner
+  } from '@permaweb/aoconnect';
 
 const FheDemo: React.FC = () => {
-    const [Module, setModule] = useState<any>(null)
-    const [secretKey, setSecretKey] = useState<string | null>(null)
-    const [publicKey, setPublicKey] = useState<string | null>(null)
-    const [valueToEncrypt1, setValueToEncrypt1] = useState<number>(0)
-    const [valueToEncrypt2, setValueToEncrypt2] = useState<number>(0)
-    const [encryptedValue1, setEncryptedValue1] = useState<string | null>(null)
-    const [encryptedValue2, setEncryptedValue2] = useState<string | null>(null)
-    const [encryptedSum, setEncryptedSum] = useState<string | null>(null)
-    const [encryptedDiff, setEncryptedDiff] = useState<string | null>(null)
-    const [decryptedSum, setDecryptedSum] = useState<number | null>(null)
-    const [decryptedDiff, setDecryptedDiff] = useState<number | null>(null)
-    const [stringToEncrypt, setStringToEncrypt] = useState<string>('Hello World')
-    const [encryptedString, setEncryptedString] = useState<string | null>(null)
-    const [decryptedString, setDecryptedString] = useState<string | null>(null)
+
     const [loading, setLoading] = useState<boolean>(false)
+    const [isConnected, setIsConnected] = useState<boolean>(false)
+    const [valueToEncrypt, setValueToEncrypt] = useState<number>(0)
+    const [encryptIntegerValueBlockId, setEncryptIntegerValueBlockId] = useState<string>('')
     const [executionTimes, setExecutionTimes] = useState<{ [key: string]: string }>({});
+    const [decryptedString, setDecryptedString] = useState<string | null>(null)
+    const [encryptIntegerParam1, setEncryptIntegerParam1] = useState<string>('')
+    const [encryptIntegerParam2, setEncryptIntegerParam2] = useState<string>('')
+    const [decryptedComputation, setDecryptedComputation] = useState<string | null>(null)
 
     const logWithTimestamp = (tag: string, message: string) => {
         const timestamp = new Date().toISOString()
         console.timeLog(tag, `[${timestamp}] ${message}`)
     }
-
-    useEffect(() => {
-        ;(async () => {
-            try {
-                const initTag = 'Module Initialization'
-                console.time(initTag)
-                logWithTimestamp(initTag, 'Starting module initialization...')
-                const module = await createModule()
-                module.onRuntimeInitialized = () => {
-                    logWithTimestamp(
-                        initTag,
-                        'Module initialized successfully.'
-                    )
-                    setModule(module)
-                    console.timeEnd(initTag)
-                }
-
-                if (module.calledRun) {
-                    module.onRuntimeInitialized()
-                } else {
-                    logWithTimestamp(
-                        initTag,
-                        'Waiting for runtime initialization...'
-                    )
-                }
-            } catch (error) {
-                console.timeEnd('Module Initialization')
-                logWithTimestamp(
-                    'Module Initialization',
-                    `Error initializing the module: ${error}`
-                )
-            }
-        })()
-    }, [])
 
     const formatTime = (milliseconds: number) => {
         const hours = Math.floor(milliseconds / 3600000);
@@ -79,205 +48,217 @@ const FheDemo: React.FC = () => {
         setExecutionTimes((prev) => ({ ...prev, [label]: formatTime(Math.round(end - start)) }));
       };
 
-    const generateSecretKey = async () => {
-        const tag = 'Generate Secret Key'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module) {
-                await timeExecution(async () => {
-                    const key = Module.generateSecretKey();
-                    setSecretKey(key);
-                  }, 'generateSecretKey');                    
-                logWithTimestamp(tag, 'Generated Secret Key: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
 
-    const generatePublicKey = async () => {
-        const tag = 'Generate Public Key'
-        console.time(tag)
+    // connect/disconnect function
+    const toggleConnection = () => {
         setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && secretKey) {
-                await timeExecution(async () => {
-                    const key = Module.generatePublicKey(secretKey);
-                    setPublicKey(key);
-                  }, 'generatePublicKey');
-                logWithTimestamp(tag, 'Generated Public Key: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
+        if (isConnected) {
+            ao_disconnect()
+        } else {
+            ao_connect()
         }
-    }, 300)
-}
-
-    const encryptInteger1 = async () => {
-        const tag = 'Encrypt Value 1'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && secretKey) {
-                await timeExecution(async () => {
-                    const encrypted = Module.encryptInteger(valueToEncrypt1);
-                    setEncryptedValue1(encrypted);
-                  }, 'encryptInteger1');
-                logWithTimestamp(tag, 'Encrypted Value 1: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const encryptInteger2 = async () => {
-        const tag = 'Encrypt Value 2'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && secretKey) {
-                await timeExecution(async () => {
-                const encrypted = Module.encryptInteger(valueToEncrypt2)
-                setEncryptedValue2(encrypted)
-            }, 'encryptInteger2');
-            logWithTimestamp(tag, 'Encrypted Value 2: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const encryptStringValue = async () => {
-        const tag = 'Encrypt String'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && secretKey) {
-                await timeExecution(async () => {
-                    const encrypted = Module.encryptString(stringToEncrypt, secretKey)
-                setEncryptedString(encrypted)
-            }, 'encryptString');
-            logWithTimestamp(tag, 'Encrypted String: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const addEncryptedValues = async () => {
-        const tag = 'Add Encrypted Values'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
-                await timeExecution(async () => {
-                    const sum = Module.addCiphertexts(encryptedValue1, encryptedValue2)
-                setEncryptedSum(sum)
-            }, 'addEncryptedValues');
-            logWithTimestamp(tag, 'Encrypted Sum: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const subtractEncryptedValues = async () => {
-        const tag = 'Subtract Encrypted Values'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && encryptedValue1 && encryptedValue2 && publicKey) {
-                await timeExecution(async () => {
-                    const diff = Module.subtractCiphertexts(encryptedValue1, encryptedValue2)
-                setEncryptedDiff(diff)
-            }, 'subtractEncryptedValues');
-            logWithTimestamp(tag, 'Encrypted Difference: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const decryptSum = async () => {
-        const tag = 'Decrypt Sum'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && encryptedSum && secretKey) {
-                await timeExecution(async () => {
-                    const sum = Module.decryptInteger(encryptedSum)
-                setDecryptedSum(sum)
-            }, 'decryptSum');
-            logWithTimestamp(tag, 'Decrypted Sum: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const decryptDiff = async () => {
-        const tag = 'Decrypt Difference'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-            if (Module && encryptedDiff && secretKey) {
-                await timeExecution(async () => {
-                    const diff = Module.decryptInteger(encryptedDiff)
-                setDecryptedDiff(diff)
-            }, 'decryptDiff');
-            logWithTimestamp(tag, 'Decrypted Difference: OK')
-            }
-        } finally {
-            setLoading(false)
-            console.timeEnd(tag)
-        }
-    }, 300)
-}
-
-    const decryptStringValue = async () => {
-        const tag = 'Decrypt String'
-        console.time(tag)
-        setLoading(true)
-        setTimeout(async function  () {
-            try {
-                if (Module && encryptedString && secretKey) {
-                    await timeExecution(async () => {
-                        const decrypted = Module.decryptString(encryptedString, secretKey, stringToEncrypt.length)
-                    setDecryptedString(decrypted)
-                }, 'decryptString');
-                logWithTimestamp(tag, 'Decrypted String: OK')
-                }
-            } finally {
-                setLoading(false)
-                console.timeEnd(tag)
-            }
-        }, 300)
     }
+
+   
+   const getSinger = (): any => {
+    const singer = Object.assign({}, othentSinger, {
+        getActiveAddress: () => 
+            //@ts-ignore
+            othentSinger.getActiveKey(),
+        getAddress: () => 
+            //@ts-ignore
+            othentSinger.getActiveKey(),
+        singer: 
+        //@ts-ignore
+        tx => othentSinger.sign(tx),
+        type: 'arweave'
+      })
+      return singer
+    
+    }
+    const ao_connect = async () => {
+        const res = await connect();
+        console.log("Connect,\n", res);
+        setIsConnected(true)
+        setLoading(false)
+        console.log("Connected")
+        // Add additional logic for establishing a connection if necessary
+    }
+
+    const ao_disconnect = async () => {
+        const res = await disconnect();
+        console.log("Disconnect,\n", res);
+        setIsConnected(false)
+        setLoading(false)
+        console.log("Disconnected")
+        // Add additional logic for disconnecting if necessary
+    }
+
+    const storeEncryptedData = async (value: string) => {
+        try {
+            const walletSing = await getSinger()
+
+          const messageId = await message({
+            process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+            signer: createDataItemSigner(walletSing),
+            // the survey as stringified JSON
+            data: '{"type": "integer", "value":"' + value + '"}',
+            tags: [{ name: 'Action', value: 'StoreEncryptedData' }],
+          });
+      
+          console.log(messageId);
+      
+          return messageId;
+        } catch (error) {
+          console.log(error);
+          return "";
+        }
+      }
+
+      const getEncryptedData = async (messageId:string) => {
+        const txIn = await dryrun({
+          process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+          tags: [
+            { name: 'Action', value: 'GetDataByKv' },
+            { name: 'Key', value: 'ao_id' },
+            { name: 'Val', value: messageId + '' },
+          ],
+        });
+      
+        const encryption = JSON.parse(txIn.Messages[0].Data);
+      
+        // Extract the data string
+        let dataString = encryption.data;
+      
+        // Correct the JSON format by adding quotes around the value
+        dataString = dataString.replace(/"value":([^"]+)}/, '"value":"$1"}');
+      
+        // Parse the corrected JSON string
+        const data = JSON.parse(dataString);
+      
+        console.log(data);
+        return data;
+      }
+      
+       
+
+    // Function to encrypt an integer value
+    const encryptIntegerValue = () => {
+
+        const tag = 'Encrypt Integer Value'
+        console.time(tag)
+        setLoading(true)
+        setTimeout(async function  () {
+            try {
+            if (isConnected) {
+                await timeExecution(async () => {
+                    try {
+                        const txIn = await dryrun({
+                          process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                          tags: [
+                            { name: 'Action', value: 'EncryptIntegerValue' },
+                            { name: 'Val', value: valueToEncrypt + '' },
+                          ],
+                        });
+                        const data = txIn.Messages[0].Data + '';
+                        console.log(data);
+                        const aoId = await storeEncryptedData(data)
+                        setEncryptIntegerValueBlockId(aoId)
+                      } catch (error) {
+                        console.log(error);
+                      }
+                                      }, 'encryptInteger');
+                logWithTimestamp(tag, 'Encrypted Integer Value: OK')
+            }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 300)         
+    }
+
+    // Function to decrypt an integer value using a blockId
+    const decryptIntegerValue = () => {
+        const tag = 'Decrypt Integer Value'
+        console.time(tag)
+        setLoading(true)
+        setTimeout(async function  () {
+            try {
+            if (isConnected) {
+                await timeExecution(async () => {
+                    try {
+                        const data = await getEncryptedData(encryptIntegerValueBlockId);
+
+                        const txOut = await dryrun({
+                          process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                          tags: [
+                            { name: 'Action', value: 'DecryptIntegerValue' },
+                            { name: 'Val', value: data.value },
+                          ],
+                        });
+                        const result = txOut.Messages[0].Data + '';
+                        console.log(result);
+                        setDecryptedString(result)
+                      } catch (error) {
+                        console.log(error);
+                      }
+                                      }, 'decryptIntegerValue');
+                logWithTimestamp(tag, 'Decrypt Integer Value: OK')
+            }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 300) 
+    }
+
+    // Function to perform an addition on two encrypted values using their block IDs
+    const computeAddOperationOnEncryptedData = () => {
+        const tag = 'Run sum on integer blocks'
+        console.time(tag)
+        setLoading(true)
+        setTimeout(async function  () {
+            try {
+            if (isConnected) {
+                await timeExecution(async () => {
+                    try {
+                        const txAddOperation = await dryrun({
+                            process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                            tags: [
+                              { name: 'Action', value: 'ComputeOperationOnEncryptedData' },
+                              { name: 'operation', value: 'add' },
+                              { name: 'ao_id_val_left', value: encryptIntegerParam1 },
+                              { name: 'ao_id_val_right', value: encryptIntegerParam2 },
+                            ],
+                          });
+                          const txOut = await dryrun({
+                            process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                            tags: [
+                              { name: 'Action', value: 'DecryptIntegerValue' },
+                              { name: 'Val', value: txAddOperation.Messages[0].Data + ""},
+                            ],
+                          });
+                          const result = txOut.Messages[0].Data + '';
+                          console.log(result);
+  
+                        setDecryptedComputation(result)
+                      } catch (error) {
+                        console.log(error);
+                      }
+                                      }, 'computeOperationOnEncryptedData');
+                logWithTimestamp(tag, 'Run sum on integer blocks: OK')
+            }
+        } finally {
+            setLoading(false)
+            console.timeEnd(tag)
+        }
+    }, 300)     }
+
+    // // Placeholder function to simulate retrieving an encrypted value from a block ID
+    // const getEncryptedValueFromBlockId = (blockId: string): string => {
+    //     // Logic to retrieve the actual encrypted value from the blockId
+    //     return blockId // For now, returning the blockId as the "encrypted value"
+    // }
 
     return (
         <div className={styles.container}>
@@ -286,8 +267,76 @@ const FheDemo: React.FC = () => {
             ) : (
                 <>
                     <h1>Fully Homomorphic Encryption Demo</h1>
-
-                    <button
+                    <button onClick={toggleConnection} className={styles.button}>
+                        {isConnected ? 'Disconnect' : 'Connect'}
+                    </button>
+                    <div>
+                        <h2 className={styles.heading}>Encrypt Integers</h2>
+                        <input
+                            type="number"
+                            value={valueToEncrypt}
+                            onChange={(e) =>
+                                setValueToEncrypt(parseInt(e.target.value))
+                            }
+                            className={styles.input}
+                        />
+                        <button
+                            onClick={encryptIntegerValue}
+                            disabled={loading || !isConnected}
+                            className={styles.button}
+                        >
+                            Encrypt Value 
+                        </button>
+                        {encryptIntegerValueBlockId && <p>Encrypted Value: Generated Block Id {encryptIntegerValueBlockId}</p>}
+                        {encryptIntegerValueBlockId && <a target='_blank' rel="norefferer" href={'https://www.ao.link/#/message/' + encryptIntegerValueBlockId}>View Encrypted Data</a>}
+                        {executionTimes['encryptInteger'] && <p>Time: {executionTimes['encryptInteger']}</p>}
+                    </div>  
+                    <div>
+                        <h2 className={styles.heading}>Decrypt Integer Value Block</h2>
+                        <input
+                            type="text"
+                            value={encryptIntegerValueBlockId}
+                            onChange={(e) => setEncryptIntegerValueBlockId(e.target.value)}
+                            className={styles.input}
+                        />
+                        <button
+                            onClick={decryptIntegerValue}
+                            disabled={loading || !isConnected || !encryptIntegerValueBlockId}
+                            className={styles.button}
+                        >
+                            Decrypt Integer Value
+                        </button>
+                        {decryptedString && <p>Value result: {decryptedString}</p>}
+                        {executionTimes['decryptIntegerValue'] && <p>Time: {executionTimes['decryptIntegerValue']}</p>}
+                        </div>
+                        <div>
+                        <h2 className={styles.heading}>Sum operation on Integer Value Block</h2>
+                        <p>Block Id Sum parameter 1</p>
+                        <input
+                            type="text"
+                            value={encryptIntegerParam1}
+                            onChange={(e) => setEncryptIntegerParam1(e.target.value)}
+                            className={styles.input}
+                        />
+                        <p>Block Id Sum parameter 2</p>
+                        <input
+                            type="text"
+                            value={encryptIntegerParam2}
+                            onChange={(e) => setEncryptIntegerParam2(e.target.value)}
+                            className={styles.input}
+                        />
+                        <button
+                            onClick={computeAddOperationOnEncryptedData}
+                            disabled={loading || !isConnected || !encryptIntegerParam1 || !encryptIntegerParam2}
+                            className={styles.button}
+                        >
+                            Decrypt Sum Block Integer Value
+                        </button>
+                        {decryptedComputation && <p>Value result: {decryptedComputation}</p>}
+                        {executionTimes['computeOperationOnEncryptedData'] && <p>Time: {executionTimes['computeOperationOnEncryptedData']}</p>}
+                        </div>
+                                     
+                    {/* <button
                         onClick={generateSecretKey}
                         disabled={loading}
                         className={styles.button}
@@ -432,10 +481,10 @@ const FheDemo: React.FC = () => {
                             <p>Decrypted String: {decryptedString}</p>
                         )}
                         {executionTimes['decryptString'] && <p>Time: {executionTimes['decryptString']}</p>}
-                    </div>
+                    </div> */}
                 </>
             )}
-        </div>
+        </div>        
     )
 }
 
