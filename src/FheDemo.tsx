@@ -99,7 +99,7 @@ const FheDemo: React.FC = () => {
             const walletSing = await getSinger()
 
           const messageId = await message({
-            process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+            process: import.meta.env.VITE_APP_AO_FHE_PROCESS_ID,
             signer: createDataItemSigner(walletSing),
             // the survey as stringified JSON
             data: '{"type": "integer", "value":"' + value + '"}',
@@ -117,7 +117,7 @@ const FheDemo: React.FC = () => {
 
       const getEncryptedData = async (messageId:string) => {
         const txIn = await dryrun({
-          process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+          process: import.meta.env.VITE_APP_AO_FHE_PROCESS_ID,
           tags: [
             { name: 'Action', value: 'GetDataByKv' },
             { name: 'Key', value: 'ao_id' },
@@ -154,7 +154,7 @@ const FheDemo: React.FC = () => {
                 await timeExecution(async () => {
                     try {
                         const txIn = await dryrun({
-                          process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                          process: import.meta.env.VITE_APP_AO_FHE_PROCESS_ID,
                           tags: [
                             { name: 'Action', value: 'EncryptIntegerValue' },
                             { name: 'Val', value: valueToEncrypt + '' },
@@ -189,7 +189,7 @@ const FheDemo: React.FC = () => {
                         const data = await getEncryptedData(encryptIntegerValueBlockId);
 
                         const txOut = await dryrun({
-                          process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                          process: import.meta.env.VITE_APP_AO_FHE_PROCESS_ID,
                           tags: [
                             { name: 'Action', value: 'DecryptIntegerValue' },
                             { name: 'Val', value: data.value },
@@ -220,7 +220,7 @@ const FheDemo: React.FC = () => {
                 await timeExecution(async () => {
                     try {
                         const txAddOperation = await dryrun({
-                            process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                            process: import.meta.env.VITE_APP_AO_FHE_PROCESS_ID,
                             tags: [
                               { name: 'Action', value: 'ComputeOperationOnEncryptedData' },
                               { name: 'operation', value: 'add' },
@@ -229,7 +229,7 @@ const FheDemo: React.FC = () => {
                             ],
                           });
                           const txOut = await dryrun({
-                            process: "QVc0L0jxgGDsKbJbof8NM-Bu2WsD_zFVVa1vxZAwfQs",
+                            process: import.meta.env.VITE_APP_AO_FHE_PROCESS_ID,
                             tags: [
                               { name: 'Action', value: 'DecryptIntegerValue' },
                               { name: 'Val', value: txAddOperation.Messages[0].Data + ""},
@@ -262,7 +262,11 @@ const FheDemo: React.FC = () => {
                 <Loader />
             ) : (
                 <>
-                    <h1>Fully Homomorphic Encryption Demo</h1>
+                    <h1>AO Run: Fully Homomorphic Encryption Demo</h1>
+                    <div>
+                    <p><b>AO FHE Block Process Id:</b> {import.meta.env.VITE_APP_AO_FHE_PROCESS_ID}</p>
+                    <a target='_blank' rel="norefferer" href={'https://www.ao.link/#/entity/' + import.meta.env.VITE_APP_AO_FHE_PROCESS_ID}>View Process In AO</a>
+                    </div>
                     <button onClick={toggleConnection} className={styles.button}>
                         {isConnected ? 'Disconnect' : 'Connect'}
                     </button>
