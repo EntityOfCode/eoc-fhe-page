@@ -311,14 +311,14 @@ const FheDemo: React.FC = () => {
                         </div>
                         <div>
                         <h2 className={styles.heading}>Sum operation on Integer Value Message</h2>
-                        <p>Block Id Sum parameter 1</p>
+                        <p>Message Id Sum parameter 1</p>
                         <input
                             type="text"
                             value={encryptIntegerParam1}
                             onChange={(e) => setEncryptIntegerParam1(e.target.value)}
                             className={styles.input}
                         />
-                        <p>Block Id Sum parameter 2</p>
+                        <p>Message Id Sum parameter 2</p>
                         <input
                             type="text"
                             value={encryptIntegerParam2}
@@ -330,7 +330,7 @@ const FheDemo: React.FC = () => {
                             disabled={loading || !encryptIntegerParam1 || !encryptIntegerParam2}
                             className={styles.button}
                         >
-                            Decrypt Sum Block Integer Value
+                            Decrypt Sum Message Integer Value
                         </button>
                         {decryptedComputation && <p>Value result: {decryptedComputation}</p>}
                         {executionTimes['computeOperationOnEncryptedData'] && <p>Time: {executionTimes['computeOperationOnEncryptedData']}</p>}
