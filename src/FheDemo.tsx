@@ -264,7 +264,7 @@ const FheDemo: React.FC = () => {
                 <>
                     <h1>AO Run: Fully Homomorphic Encryption Demo</h1>
                     <div>
-                    <p><b>AO FHE Block Process Id:</b> {import.meta.env.VITE_APP_AO_FHE_PROCESS_ID}</p>
+                    <p><b>AO FHE Process Id:</b> {import.meta.env.VITE_APP_AO_FHE_PROCESS_ID}</p>
                     <a target='_blank' rel="norefferer" href={'https://www.ao.link/#/entity/' + import.meta.env.VITE_APP_AO_FHE_PROCESS_ID}>View Process In AO</a>
                     </div>
                     <button onClick={toggleConnection} className={styles.button}>
@@ -287,12 +287,12 @@ const FheDemo: React.FC = () => {
                         >
                             Encrypt Value 
                         </button>
-                        {encryptIntegerValueBlockId && <p>Encrypted Value: Generated Block Id {encryptIntegerValueBlockId}</p>}
+                        {encryptIntegerValueBlockId && <p>Encrypted Value: Generated Message Id {encryptIntegerValueBlockId}</p>}
                         {encryptIntegerValueBlockId && <a target='_blank' rel="norefferer" href={'https://www.ao.link/#/message/' + encryptIntegerValueBlockId}>View Encrypted Data</a>}
                         {executionTimes['encryptInteger'] && <p>Time: {executionTimes['encryptInteger']}</p>}
                     </div>  
                     <div>
-                        <h2 className={styles.heading}>Decrypt Integer Value Block</h2>
+                        <h2 className={styles.heading}>Decrypt Integer Value Message</h2>
                         <input
                             type="text"
                             value={encryptIntegerValueBlockId}
@@ -310,7 +310,7 @@ const FheDemo: React.FC = () => {
                         {executionTimes['decryptIntegerValue'] && <p>Time: {executionTimes['decryptIntegerValue']}</p>}
                         </div>
                         <div>
-                        <h2 className={styles.heading}>Sum operation on Integer Value Block</h2>
+                        <h2 className={styles.heading}>Sum operation on Integer Value Message</h2>
                         <p>Block Id Sum parameter 1</p>
                         <input
                             type="text"
